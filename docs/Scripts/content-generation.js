@@ -3,10 +3,6 @@ import { Octokit, App } from "https://esm.sh/octokit";
 
 const repoPath = 'docs/Media'
 
-//This is not safe :3
-const encodedAccessToken = 'Z2l0aHViX3BhdF8xMUJDM0hLN0EwTWJOTnlQbkxBekpwXzUzNWFkc09RUEw5SDlDV2pTa2lTV1Y1dDFvdFNmRjlwcVVlSGJhYkNqTkVZSjNIVlREQk5rc3JLZVJl'
-const accessToken = atob(encodedAccessToken);
-
 let sourceFolder;
 let imgReferences = [];
 let imgDirectory = [];
@@ -32,9 +28,7 @@ async function getRepoData(){
     //Initialize Octokit
     // Octokit.js
     // https://github.com/octokit/core.js#readme
-    const octokit = new Octokit({
-        auth: accessToken
-    })
+    const octokit = new Octokit({ })
 
     //Fetch content from Page's folder
     const repo = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {

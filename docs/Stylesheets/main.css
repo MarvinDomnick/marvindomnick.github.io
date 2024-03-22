@@ -68,25 +68,134 @@ body{
         left: 50%;
         transform: translateX(-50%);
     
-        a:hover {
-            bottom: 0.5%;
-            scale: 1.01;
-            background-color: rgb(155, 155, 155);
-        }
+        
     }
 
-    .contentOption {
+    .contentOptionContainer {
         position: relative;
         margin-bottom: 30px;
 
-        border-radius: 10px;
-        height: 300px;
-        width: 400px;
-        background-color: rgb(140, 140, 140);
+        height: 307.5px;
+        width: 407.5px;
     }
 
     .contentOption:last-child {
         margin-bottom: 0px;
+    }
+
+    .contentOptionLink {
+        display: block;
+
+        border-radius: 10px;
+        height: 100%;
+        width: 100%;
+        background-color: black;
+
+        z-index: 3;
+    }
+    
+    .contentOptionLink:hover {
+            bottom: 0.5%;
+            scale: 1.01;
+            background-color: rgb(140, 140, 140);
+        }
+
+    .contentOptionImg {
+        max-height: 300px;
+        max-width: 400px;
+        border: 0px;
+        border-radius: 10px;
+        
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+
+        pointer-events: none;
+    }
+    
+    .contentOptionImgTitle {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 20px;
+        padding: 3px;
+        z-index: 2;
+
+        background-color: rgba(36, 36, 36, 0.9);
+        border-radius: 3px;
+
+        text-align: center;
+        font-size: small;
+    }
+
+    .contentOptionImgSwapRight, .contentOptionImgSwapLeft {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        
+        height: 40px;
+        width: 40px;
+        border: 0px;
+        border-radius: 20px;
+
+        z-index: 2;
+
+        background-color: rgba(47, 47, 47, 0.9);
+
+        text-align: center;
+        line-height: 20px;
+        font-size: larger;
+        font-weight: bolder;    
+    }
+
+    .contentOptionImgSwapLeft {
+        left: 3%;
+    }
+
+    .contentOptionImgSwapRight {
+        right: 3%;
+    }
+
+    .contentOptionImgSwapRight:hover, .contentOptionImgSwapLeft:hover {
+        background-color: rgba(140, 140, 140, 0.9);
+    }
+    
+    .contentOptionImgCounter {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 5px;
+        padding: 2px;
+        z-index: 2;
+
+        border-radius: 3px;
+
+        display: flex;
+        flex-direction: row;
+    }
+
+    .contentOptionImgCount {
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        margin-right: 7px;
+
+        background-color: rgba(47, 47, 47, 1);
+    }
+
+    .contentOptionImgCount:last-child {
+        margin-right: 0px;
+    }
+
+    .contentOptionImgCountCurrent {
+        position: relative;
+        transform: translate(1px, -1px);
+        background-color: rgb(203, 203, 203);
+        height: 8px;
+        width: 8px;
+        border-radius: 4px;
     }
 
     .contentOptionTitle {
@@ -95,12 +204,13 @@ body{
         transform: translateX(-50%);
         top: 5px;
         padding: 3px;
+        z-index: 2;
 
         background-color: rgba(36, 36, 36, 0.9);
         border-radius: 3px;
 
         text-align: center;
-    }
+    }    
 
     .inContentImage {
         float: right;

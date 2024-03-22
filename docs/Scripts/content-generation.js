@@ -4,9 +4,8 @@ import { Octokit, App } from "https://esm.sh/octokit";
 const repoPath = 'docs/Media'
 
 //This is not safe :3
-const encodedAccessToken = 'Z2l0aHViX3BhdF8xMUJDM0hLN0EwWmJmdVE0QkpUdTZrX0hGMEROWHMzdmEwNDd5RlgxOWx2cmYycm9jRnJEeHplVzVtSlk5cWRjTHFSVlZVNDZUMzhpaXlkODZp'
+const encodedAccessToken = 'Z2l0aHViX3BhdF8xMUJDM0hLN0EwTWJOTnlQbkxBekpwXzUzNWFkc09RUEw5SDlDV2pTa2lTV1Y1dDFvdFNmRjlwcVVlSGJhYkNqTkVZSjNIVlREQk5rc3JLZVJl'
 const accessToken = atob(encodedAccessToken);
-console.log(accessToken)
 
 let sourceFolder;
 let imgReferences = [];

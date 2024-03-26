@@ -1,11 +1,18 @@
 .gridRows {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
 }
 
 .gridRow {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    p {
+        width: 200px;
+        margin: 1px;
+    }
 }
 
 .gridColumns {
@@ -25,4 +32,9 @@
     max-height: 100%;
     background-color: rgb(124, 124, 124);
     transform: translateX(-12px);
+}
+
+.borderBelow {
+    border-bottom: 1px solid;
+    border-color: rgba(50, 50, 50, 0.5);
 }

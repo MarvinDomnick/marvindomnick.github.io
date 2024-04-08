@@ -3,95 +3,65 @@ import { Octokit, App } from "https://esm.sh/octokit";
 
 const repoPath = 'docs/Media'
 
-let sourceFolder;
+//Initialize Octokit
+// Octokit.js
+// https://github.com/octokit/core.js#readme
+const octokit = new Octokit({ })
+
+const sourceFolder = getSourceFolder();
+const repo = await getRepoData();
 let imgReferences = [];
 let imgDirectory = [];
 let titleDirectory = [];
 let contentSources = [];
 
-getRepoData()
+addContentOptions(await getRepoData());
 
-//Generates content of page
-async function getRepoData(){
+async function addContentOptions(repo){
+    let subjectFolder = 0;
+    for(subjectFolder; subjectFolder<repo.data.length; subjectFolder++){
+
+        //Fetch contents of subject project folder from Github
+        const project = await getProjectData(subjectFolder, repo)
+
+        //Form content reference and add to list for future use
+        const contentSource = `/Media/${sourceFolder}/${repo.data[subjectFolder].name}`;
+        contentSources.push(contentSource);
+
+        let content = await getContentJson(contentSource);
+    
+        imgDirectory.push(0)
+        titleDirectory.push(content.descriptions)
+
+        addImageReferencesToImageReferences(project, subjectFolder);
+        addProjectDataHtml(content, contentSource, imgReferences, subjectFolder, project);
+        addSwapImageEventListeners(project, subjectFolder);
+    }
+}
+
+function addImageReferencesToImageReferences(project, subjectFolder){
+    imgReferences.push([])
+
+    let iteration = 0;
+    project.data.forEach(function (){
+        if(iteration < project.data.length-1){
+            imgReferences[subjectFolder].push(project.data[iteration].name);
+            iteration++;
+        }
+    })
+}
+
+function addProjectDataHtml(contentJson, contentSource, imgReferences, subjectFolder, project){
     const contentSelector = document.getElementById('contentSelector');
 
-    //Determine page's folder
-    {
-        if(window.location.pathname === "/university-projects.html"){
-            sourceFolder = "UniversityProjects";
-        }
-        else{
-            sourceFolder = "PersonalProjects"
-        }
-    }
-
-    //Initialize Octokit
-    // Octokit.js
-    // https://github.com/octokit/core.js#readme
-    const octokit = new Octokit({ })
-
-    //Fetch content from Page's folder
-    const repo = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-        owner: 'MarvinDomnick',
-        repo: 'marvindomnick.github.io',
-        path: `${repoPath}/${sourceFolder}`,
-        headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
-    });
-
-    //Go through all found folders and form contentOptions in html
-    {
-        let subjectFolder = 0;
-        for(subjectFolder; subjectFolder<repo.data.length; subjectFolder++){
-
-            //Fetch contents of subject project folder from Github
-            const project = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}/{project}', {
-                owner: 'MarvinDomnick',
-                repo: 'marvindomnick.github.io',
-                path: `${repoPath}/${sourceFolder}`,
-                project: `${repo.data[subjectFolder].name}`,
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28'
-                }
-            });
-
-            //Form content reference and add to list for future use
-            const contentSource = `/Media/${sourceFolder}/${repo.data[subjectFolder].name}`;
-            contentSources.push(contentSource);
-
-            //Get data from folder's JSON file and then process data
-            {
-                await fetch(`${contentSource}/content.json`)
-                    .then(response => response.json())
-                    .then(data => {
-                        //Use data to update data lists
-                        {
-
-                            imgReferences.push([])
-                            imgDirectory.push(0)
-                            titleDirectory.push(data.descriptions)
-
-                            //Add image references to imgReferences list
-                            let iteration = 0;
-                            project.data.forEach(function (){
-                                if(iteration < project.data.length-1){
-                                    imgReferences[subjectFolder].push(project.data[iteration].name);
-                                    iteration++;
-                                }
-                            })
-                        }
-
-                        //Use data to add html elements
-                        {
-                            let html = '\n' +
+    let html = '\n' +
                                 '           <div id="contentOptionContainer'+subjectFolder+'" class="contentOptionContainer" href="UniversityProjects.html">\n' +
                                 '                <a class="contentOptionLink" href="university-projects.html"></a>\n' +
                                 '                <button id="contentOptionImgSwapLeft'+subjectFolder+'" class="contentOptionImgSwapLeft"><</button>\n' +
                                 '                <button id="contentOptionImgSwapRight'+subjectFolder+'" class="contentOptionImgSwapRight">></button>\n' +
-                                '                <p class="contentOptionTitle">' + data.title + '</p>\n' +
+                                '                <p class="contentOptionTitle">' + contentJson.title + '</p>\n' +
                                 '                <img id="contentOptionImg'+subjectFolder+'" class="contentOptionImg" src="' + contentSource + '/' + imgReferences[subjectFolder][imgDirectory[subjectFolder]] + '"></img>\n' +
-                                '                <p id="contentOptionImgTitle'+subjectFolder+'" class="contentOptionImgTitle">' + data.descriptions[0] + '</p>\n' +
+                                '                <p id="contentOptionImgTitle'+subjectFolder+'" class="contentOptionImgTitle">' + contentJson.descriptions[0] + '</p>\n' +
                                 '                <div id="contentOptionImgCounter' + subjectFolder + '" class="contentOptionImgCounter"></div>' +
                                 '           </div>';
 
@@ -106,38 +76,30 @@ async function getRepoData(){
 
                             const currentImgCount = document.getElementById("contentOptionImgCount_"+subjectFolder+'_'+0);
                             currentImgCount.classList.add("contentOptionImgCountCurrent");
-                        }
+}
 
-                    })
-            }
+function addSwapImageEventListeners(subjectFolder) {
+    let iteration = 0;
+    let swapLefts = document.querySelectorAll('.contentOptionImgSwapLeft');
+    swapLefts.forEach(function (swapLeft){
+        let subjectFolder = iteration;
+        iteration++;
 
-        }
-    }
-
-    //Add eventListeners to swapping buttons to switch between images manually
-    {
-        let iteration = 0;
-        let swapLefts = document.querySelectorAll('.contentOptionImgSwapLeft');
-        swapLefts.forEach(function (swapLeft){
-            let subjectFolder = iteration;
-            iteration++;
-
-            swapLeft.addEventListener('click', function() {
-                swapImage("l", subjectFolder);
-            })
+        swapLeft.addEventListener('click', function() {
+            swapImage("l", subjectFolder);
         })
+    })
 
-        iteration = 0;
-        let swapRights = document.querySelectorAll('.contentOptionImgSwapRight');
-        swapRights.forEach(function (swapRight){
-            let subjectFolder = iteration;
-            iteration++;
+    iteration = 0;
+    let swapRights = document.querySelectorAll('.contentOptionImgSwapRight');
+    swapRights.forEach(function (swapRight){
+        let subjectFolder = iteration;
+        iteration++;
 
-            swapRight.addEventListener('click', function() {
-                swapImage("r", subjectFolder);
-            })
+        swapRight.addEventListener('click', function() {
+            swapImage("r", subjectFolder);
         })
-    }
+    })
 }
 
 function swapImage(direction, subjectFolder) {
@@ -163,4 +125,49 @@ function swapImage(direction, subjectFolder) {
     imgCounterElementNew.classList.add("contentOptionImgCountCurrent");
     imgElement.setAttribute('src', contentSources[subjectFolder] + '/' + imgReferences[subjectFolder][imgDirectory[subjectFolder]]);
     imgTitleElement.innerHTML = titleDirectory[subjectFolder][imgDirectory[subjectFolder]];
+}
+
+function getSourceFolder(){
+    let sourceFolder;
+
+    if(window.location.pathname === "/university-projects.html"){
+        sourceFolder = "UniversityProjects";
+    }
+    else{
+        sourceFolder = "PersonalProjects"
+    }
+    return sourceFolder;
+}
+
+async function getRepoData(){
+    //Fetch content from Page's folder
+    const repo = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'MarvinDomnick',
+        repo: 'marvindomnick.github.io',
+        path: `${repoPath}/${sourceFolder}`,
+        headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+    });
+    return repo;
+}
+
+async function getProjectData (subjectFolder, repo) {
+    const project = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}/{project}', {
+        owner: 'MarvinDomnick',
+        repo: 'marvindomnick.github.io',
+        path: `${repoPath}/${sourceFolder}`,
+        project: `${repo.data[subjectFolder].name}`,
+        headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+    });
+    return project;
+}
+
+async function getContentJson (contentSource) {
+    let contentJson = await fetch(`${contentSource}/content.json`)
+        .then(response => response.json()) 
+
+    return contentJson
 }
